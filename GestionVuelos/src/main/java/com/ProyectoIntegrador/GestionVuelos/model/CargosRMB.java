@@ -1,6 +1,7 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -18,9 +19,9 @@ import java.time.LocalDate;
 public class CargosRMB {
 
     private LocalDate fecha;
-    private  String descripcion;
-    private  int codigoOperacion;
-    private  double precioRMB;
-    private  double CosteOperacion;
+    private String descripcion;
+    private int codigoOperacion;
+    private double precioRMB;
+    private double CosteOperacion;
 
 }

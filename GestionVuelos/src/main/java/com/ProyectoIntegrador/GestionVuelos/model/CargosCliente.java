@@ -29,10 +29,4 @@ public class CargosCliente {
     private  double costeOperacion;
     private  double tasas;
 
-
-
-
-
-
-
 }
