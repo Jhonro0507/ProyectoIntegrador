@@ -1,11 +1,14 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.*;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Setter
 @Getter
@@ -15,22 +18,31 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "vuelos")
 public class Vuelo {
-    private LocalDate opFecha;
-    private String opDes;
-    private String codOp;
-    private LocalDate fechaSalida;
-    private String iOrigen;
-    private String iDestino;
-    private LocalDate iFechaLlegada;
-    private String iNBillete;
-    private String iAerolinea;
-    private String nacional;
-    private String proveedor;
-    private String notas;
-    private LocalDate dFechaSalida;
-    private LocalDate dOrigen;
-    private String dDestino;
-    private LocalDate dFechaLlegada;
-    private String dNBillete;
-    private String dAerolinea;
+
+    @Column(name = "numero", nullable = false, unique = true)
+    private int numero;
+
+    @Column(name = "tipo", nullable = false)
+    @Pattern(regexp = "^(p|e|P|E)$", message = "El tipo de vuelo debe ser p: premium o e: estándar")
+    private String tipo;
+
+    @Column(name = "precio_base", nullable = false)
+    private long precioBase;
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private long idVuelo;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "Vuelos", fetch = FetchType.EAGER)
+    private List<Reserva> reservas  = new ArrayList<>();
+
+    @PrePersist
+    public void toLowerCase() {
+        if (tipo != null) {
+            tipo = tipo.toLowerCase(Locale.ROOT);
+        }
+    }
 }
+
+

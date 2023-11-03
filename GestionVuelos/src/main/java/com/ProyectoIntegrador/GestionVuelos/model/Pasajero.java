@@ -1,8 +1,16 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -11,17 +19,38 @@ import lombok.*;
 @ToString
 @Entity
 @Table(name = "pasajeros")
+
 public class Pasajero {
-    private String codPas;
-    private String dni;
+
+    @NotNull
+    @Column
     private String nombre;
-    private String apellidoP;
-    private String apellidoM;
-    private String tipoPasajero;
-    private String billete;
-    private double tasas;
-    private String cg;
-    private String ge;
-    private double difTarifaNacional;
+
+    @NotNull
+    @Column
+    private String apellido;
+
+    @Pattern(regexp = "\\d+", message = "La cédula debe ser numérica")
+    @Column(unique = true)
+    private String cedula;
+
+    @Column
+    private String direccion;
+
+    @Min(0)
+    @Column
+    private int edad;
+
+    @Email
+    @Column
+    private String correoElectronico;
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private long idPasajero;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "pasajero", fetch = FetchType.EAGER)
+    private List<Reserva> reservas = new ArrayList<>();
 
 }
