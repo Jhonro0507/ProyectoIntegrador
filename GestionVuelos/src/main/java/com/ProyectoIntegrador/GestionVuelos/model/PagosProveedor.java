@@ -27,4 +27,5 @@ public class PagosProveedor {
     private double importe;
     private String entidad;
     private double saldo;
+
 }
