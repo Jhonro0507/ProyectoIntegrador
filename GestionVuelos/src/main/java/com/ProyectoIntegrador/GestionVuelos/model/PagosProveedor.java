@@ -26,5 +26,5 @@ public class PagosProveedor {
     private Date fecha;
     private double importe;
     private String entidad;
-    private double sald
+    private double saldo;
 }
