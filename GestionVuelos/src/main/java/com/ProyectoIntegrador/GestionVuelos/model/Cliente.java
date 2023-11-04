@@ -13,4 +13,15 @@ import lombok.*;
 @Table(name = "cliente")
 
 public class Cliente {
+
+    private String tipoIdentificacion;
+    private String numIdentificacion;
+    private String Login;
+    private String Pasword;
+    private char estado;
+    private char permisos;
+    private String nombre;
+    private String apellido;
+    private Long telefono;
+    private String correo;
 }
