@@ -27,16 +27,16 @@ public class Cliente {
     private Long telefono;
     private String correo;
 
+    public Cliente createCliente(Cliente cliente) {
+        return cliente;
+    }
+
     public List<Cliente> getAllClientes() {
         return null;
     }
 
     public Cliente getClienteById(Long id) {
         return null;
-    }
-
-    public Cliente createCliente(Cliente cliente) {
-        return cliente;
     }
 
     public Cliente updateCliente(Long id, Cliente cliente) {
