@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -24,4 +26,23 @@ public class Cliente {
     private String apellido;
     private Long telefono;
     private String correo;
+
+    public List<Cliente> getAllClientes() {
+        return null;
+    }
+
+    public Cliente getClienteById(Long id) {
+        return null;
+    }
+
+    public Cliente createCliente(Cliente cliente) {
+        return cliente;
+    }
+
+    public Cliente updateCliente(Long id, Cliente cliente) {
+        return cliente;
+    }
+
+    public void deleteCliente(Long id) {
+    }
 }
