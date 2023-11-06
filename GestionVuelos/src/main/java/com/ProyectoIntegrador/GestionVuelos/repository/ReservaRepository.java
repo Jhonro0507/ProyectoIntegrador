@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.repository;
 
+import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
-    Optional<Reserva> findByIdReserva(UUID id);
-    @Query("SELECT r FROM Reserva r WHERE r.pasajero.cedula = :cedula")
-    List<Reserva> obtenerReservasPorCedula(@Param("cedula") String cedula);
+    Optional<Reserva> findById(UUID id);
+    @Query("SELECT r FROM Reserva r JOIN r.pasajeros p WHERE p.id = :idPasajero")
+    List<Reserva> obtenerReservasPorIdPasajero(@Param("idPasajero") IdPasajero idPasajero);
 }

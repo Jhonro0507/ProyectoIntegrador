@@ -1,8 +1,12 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.io.Serializable;
+
 
 @Setter
 @Getter
@@ -12,17 +16,23 @@ import lombok.*;
 @Entity
 @Table(name = "asientos")
 public class Asiento {
-    @Id
+
+    @EmbeddedId
+    private IdAsiento id;
+    @Column(nullable = false)
     @Pattern(regexp = "^(E|EP|B|P)$", message = "La clase de los asientos debe ser económica (E), económica premium (EP), business (B) o primera clase (P).")
     private String clase;
+    @Column(nullable = false)
+    @Pattern(regexp = "^(ocupado|reservado|disponible)$", message = "El estado del asiento solo puede ser ocupado, reservado o disponible")
+    private String estado;
+    @Column
+    private String adicional;
 
-    @Pattern(regexp = "\\d+", message = "La fila debe ser numérica")
-    @Id
-    private String fila;
 
-    @Pattern(regexp = "[A-Z]", message = "La columna debe ser una única letra mayúscula")
-    @Id
-    private String columna;
 
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "vuelo_id")
+    private Vuelo vuelo;
 
 }

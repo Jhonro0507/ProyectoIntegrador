@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.controller;
 
+import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Reserva;
 import com.ProyectoIntegrador.GestionVuelos.service.ReservaService;
 import jakarta.validation.Valid;
@@ -40,8 +41,14 @@ public class ReservaController {
         return reservaService.actualizarReserva(id, reservaActualizada);
     }
 
+    @PutMapping("/pago/{id}")
+    public ResponseEntity<?> pagarReserva(@PathVariable UUID id, @RequestBody ResponseEntity<Boolean> pagoRealizado) {
+        return reservaService.pagarReserva(id, pagoRealizado);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarReserva(@PathVariable Long id) {
         return reservaService.eliminarReserva(id);
     }
+
 }

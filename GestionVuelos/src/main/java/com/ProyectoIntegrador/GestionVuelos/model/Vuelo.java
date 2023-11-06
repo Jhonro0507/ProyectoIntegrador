@@ -3,12 +3,13 @@ package com.ProyectoIntegrador.GestionVuelos.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @Setter
 @Getter
@@ -19,30 +20,41 @@ import java.util.Locale;
 @Table(name = "vuelos")
 public class Vuelo {
 
-    @Column(name = "numero", nullable = false, unique = true)
-    private int numero;
-
-    @Column(name = "tipo", nullable = false)
-    @Pattern(regexp = "^(p|e|P|E)$", message = "El tipo de vuelo debe ser p: premium o e: estándar")
-    private String tipo;
-
-    @Column(name = "precio_base", nullable = false)
-    private long precioBase;
-
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long idVuelo;
+    private long id;
+    @Column(nullable = false)
+    private String numeroVuelo;
+    @Column(nullable = false)
+    private String aerolinea;
+    @Column(nullable = false)
+    private String ciudadOrigen;
+    @Column(nullable = false)
+    private String ciudadDestino;
+    @Column(columnDefinition = "DATE", nullable = false)
+    private LocalDate fechaSalida;
+    @Column(columnDefinition = "TIME", nullable = false)
+    private LocalTime horaSalida;
+    @Column(columnDefinition = "DATE", nullable = false)
+    private LocalDate fechaLlegada;
+    @Column(columnDefinition = "TIME", nullable = false)
+    private LocalTime horaLlegada;
+    @Column(nullable = false)
+    private double precio;
+    @Column(nullable = false)
+    private int asientosDisponibles;
+    @Column(nullable = false)
+    private int asientosTotales;
+
+
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "Vuelos", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "vuelos", fetch = FetchType.EAGER)
     private List<Reserva> reservas  = new ArrayList<>();
 
-    @PrePersist
-    public void toLowerCase() {
-        if (tipo != null) {
-            tipo = tipo.toLowerCase(Locale.ROOT);
-        }
-    }
+    @JsonManagedReference
+    @OneToMany(mappedBy = "vuelo", fetch = FetchType.EAGER)
+    private List<Asiento> asientos = new ArrayList<>();
 }
 
 

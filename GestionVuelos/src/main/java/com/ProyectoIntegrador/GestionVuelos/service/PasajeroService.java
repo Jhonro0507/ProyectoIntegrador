@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.service;
 
+import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Pasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Reserva;
 import com.ProyectoIntegrador.GestionVuelos.repository.PasajeroRepository;
@@ -68,11 +69,11 @@ public class PasajeroService {
             }
 
             pasajeroExistente.setNombre(pasajeroActualizado.getNombre());
-            pasajeroExistente.setApellido(pasajeroActualizado.getApellido());
-            pasajeroExistente.setCedula(pasajeroActualizado.getCedula());
+            pasajeroExistente.setApellido1(pasajeroActualizado.getApellido1());
+            pasajeroExistente.setApellido2(pasajeroActualizado.getApellido2());
             pasajeroExistente.setDireccion(pasajeroActualizado.getDireccion());
             pasajeroExistente.setEdad(pasajeroActualizado.getEdad());
-            pasajeroExistente.setCorreoElectronico(pasajeroActualizado.getCorreoElectronico());
+            pasajeroExistente.setEmail(pasajeroActualizado.getEmail());
 
             pasajeroRepository.save(pasajeroExistente);
 
@@ -98,9 +99,9 @@ public class PasajeroService {
         }
     }
 
-    public ResponseEntity<?> obtenerReservasPorCedula(String cedula) {
+    public ResponseEntity<?> obtenerReservasPorIdPasajero(IdPasajero idPasajero) {
         try {
-            List<Reserva> reservas = reservaRepository.obtenerReservasPorCedula(cedula);// Implementa este método en tu repositorio ReservaRepository
+            List<Reserva> reservas = reservaRepository.obtenerReservasPorIdPasajero(idPasajero);// Implementa este método en tu repositorio ReservaRepository
             return ResponseEntity.status(HttpStatus.OK).body(reservas);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

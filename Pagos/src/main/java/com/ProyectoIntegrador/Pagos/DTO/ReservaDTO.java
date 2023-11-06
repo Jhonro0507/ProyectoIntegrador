@@ -1,6 +1,5 @@
 package com.ProyectoIntegrador.GestionVuelos.DTO;
 
-import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
 import lombok.Data;
 
 import java.time.LocalDate;

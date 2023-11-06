@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.controller;
 
+import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Pasajero;
 import com.ProyectoIntegrador.GestionVuelos.service.PasajeroService;
 import jakarta.validation.Valid;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/Pasajeros")
+@RequestMapping("/pasajeros")
 public class PasajeroController {
 
     private final PasajeroService pasajeroService;
@@ -45,8 +46,8 @@ public class PasajeroController {
     }
 
     @GetMapping("/{cedula}/reservas")
-    public ResponseEntity<?> obtenerReservasPorCedula(@PathVariable String cedula) {
-        return pasajeroService.obtenerReservasPorCedula(cedula);
+    public ResponseEntity<?> obtenerReservasPorIdPasajero(@PathVariable IdPasajero idPasajero) {
+        return pasajeroService.obtenerReservasPorIdPasajero(idPasajero);
     }
 }
 

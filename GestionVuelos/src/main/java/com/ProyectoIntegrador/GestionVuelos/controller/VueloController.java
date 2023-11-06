@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/Vuelos")
+@RequestMapping("/vuelos")
 public class VueloController {
 
     private final VueloService vueloService;

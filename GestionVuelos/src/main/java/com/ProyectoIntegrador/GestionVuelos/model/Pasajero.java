@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -9,6 +10,7 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,38 +21,42 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "pasajeros")
-
 public class Pasajero {
 
-    @NotNull
-    @Column
+    @EmbeddedId
+    private IdPasajero id;
+    @Column(nullable = false)
     private String nombre;
-
     @NotNull
     @Column
-    private String apellido;
-
-    @Pattern(regexp = "\\d+", message = "La cédula debe ser numérica")
-    @Column(unique = true)
-    private String cedula;
-
+    private String apellido1;
+    @Column
+    private String apellido2;
     @Column
     private String direccion;
-
     @Min(0)
-    @Column
+    @Column(nullable = false)
     private int edad;
-
     @Email
-    @Column
-    private String correoElectronico;
+    @Column(nullable = false)
+    private String email;
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long idPasajero;
+
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "pasajeros", fetch = FetchType.EAGER)
+    private List<Cliente> clientes  = new ArrayList<>();
 
     @JsonManagedReference
     @OneToMany(mappedBy = "pasajero", fetch = FetchType.EAGER)
-    private List<Reserva> reservas = new ArrayList<>();
+    private List<Mascota> mascotas = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "pasajero", fetch = FetchType.EAGER)
+    private List<Equipaje> equipajes = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "pasajeros", fetch = FetchType.EAGER)
+    private List<Reserva> reservas  = new ArrayList<>();
 
 }

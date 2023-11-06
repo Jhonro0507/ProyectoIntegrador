@@ -64,10 +64,15 @@ public class VueloService {
             if (vueloExistente == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vuelo no encontrada");
             }
-
-            vueloExistente.setNumero(vuelo.getNumero());
-            vueloExistente.setTipo(vuelo.getTipo());
-            vueloExistente.setPrecioBase(vuelo.getPrecioBase());
+            vueloExistente.setNumeroVuelo(vuelo.getNumeroVuelo());
+            vueloExistente.setAerolinea(vuelo.getAerolinea());
+            vueloExistente.setCiudadOrigen(vuelo.getCiudadOrigen());
+            vueloExistente.setCiudadDestino(vuelo.getCiudadDestino());
+            vueloExistente.setHoraSalida(vuelo.getHoraSalida());
+            vueloExistente.setHoraLlegada(vuelo.getHoraLlegada());
+            vueloExistente.setPrecio(vuelo.getPrecio());
+            vueloExistente.setAsientosDisponibles(vuelo.getAsientosDisponibles());
+            vueloExistente.setAsientosTotales(vuelo.getAsientosTotales());
 
             Vuelo vueloActualizada = vueloRepository.save(vueloExistente);
             return ResponseEntity.status(HttpStatus.OK).body(vueloActualizada);

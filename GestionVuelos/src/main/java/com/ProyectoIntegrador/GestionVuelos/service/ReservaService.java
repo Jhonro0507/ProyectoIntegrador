@@ -35,8 +35,24 @@ public class ReservaService {
 
     public ResponseEntity<?> registrarReserva(Reserva reserva) {
         try {
-            Pasajero pasajero = pasajeroRepository.findById(reserva.getPasajero().getIdPasajero()).orElse(null);
-            ResponseEntity<?> validationResult = validarReserva(reserva, pasajero);
+
+            List<Pasajero> pasajeros = reserva.getPasajeros();
+            List<Pasajero> pasajerosRegistrados = new ArrayList<>();
+
+            for (Pasajero pasajero : pasajeros) {
+                Pasajero pasajeroExistente = pasajeroRepository.findById(pasajero.getId()).orElse(null);
+
+                if (pasajeroExistente == null) {
+                    // Si el pasajero no existe en la base de datos, créalo
+                    pasajeroRepository.save(pasajero);
+                    pasajerosRegistrados.add(pasajero);
+                } else {
+                    pasajerosRegistrados.add(pasajeroExistente);
+                }
+            }
+
+            ResponseEntity<?> validationResult = validarReserva(reserva, pasajerosRegistrados);
+
 
             if (validationResult != null) {
                 return validationResult;
@@ -44,24 +60,24 @@ public class ReservaService {
 
             // Generar un número de reserva único (GUID)
             UUID numeroReserva = UUID.randomUUID();
-            reserva.setIdReserva(numeroReserva);
+            reserva.setId(numeroReserva);
 
             // Continuar con el proceso de reserva si la validación es exitosa
-            long precioTotal = calcularPrecioTotal(reserva);
+            double precioTotal = calcularPrecioTotal(reserva);
             reserva.setTotalPagar(precioTotal);
 
             Reserva reservaRegistrada = reservaRepository.save(reserva);
 
             // Mapear la entidad Reserva a ReservaDTO
             ReservaDTO reservaDTO = new ReservaDTO();
-            reservaDTO.setIdReserva(reservaRegistrada.getIdReserva());
-            reservaDTO.setFechaReserva(reservaRegistrada.getFechaReserva());
+            reservaDTO.setId(reservaRegistrada.getId());
+            reservaDTO.setFecha(reservaRegistrada.getFecha());
             reservaDTO.setTotalPagar(reservaRegistrada.getTotalPagar());
 
             // Obtener la lista de números de Vuelos
-            List<Integer> numerosVuelos = reservaRegistrada.getVuelos()
+            List<String> numerosVuelos = reservaRegistrada.getVuelos()
                     .stream()
-                    .map(Vuelo::getNumero)
+                    .map(Vuelo::getNumeroVuelo)
                     .collect(Collectors.toList());
             reservaDTO.setNumerosVuelos(numerosVuelos);
 
@@ -72,72 +88,77 @@ public class ReservaService {
     }
 
 
-    private ResponseEntity<?> validarReserva(Reserva reserva, Pasajero pasajero) {
+    private ResponseEntity<?> validarReserva(Reserva reserva, List<Pasajero> pasajeros) {
+        // Validar existencia de pasajeros
+        for (Pasajero pasajero : pasajeros) {
+            if (pasajero == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los pasajeros no está registrado.");
+            }
+        }
+
         // Validar la fecha (no nula y posterior a la fecha actual)
         LocalDate fechaActual = LocalDate.now();
-        if (reserva.getFechaReserva() == null || reserva.getFechaReserva().isBefore(fechaActual)) {
+        if (reserva.getFecha() == null || reserva.getFecha().isBefore(fechaActual)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La fecha de reserva no es válida.");
         }
-        // Validar existencia de pasajero
-        if (pasajero == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El pasajero no está registrado.");
-        }
+
         // Validar existencia de Vuelos
-        List<Long> VuelosNoEncontradas = new ArrayList<>();
+        List<Long> vuelosNoEncontrados = new ArrayList<>();
 
         for (Vuelo vuelo : reserva.getVuelos()) {
-            Vuelo vueloExistente = vueloRepository.findById(vuelo.getIdVuelo()).orElse(null);
+            Vuelo vueloExistente = vueloRepository.findById(vuelo.getId()).orElse(null);
 
             if (vueloExistente == null) {
-                VuelosNoEncontradas.add(vuelo.getIdVuelo());
+                vuelosNoEncontrados.add(vuelo.getId());
             }
         }
 
-        if (!VuelosNoEncontradas.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no existen: " + VuelosNoEncontradas);
+        if (!vuelosNoEncontrados.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no existen: " + vuelosNoEncontrados);
         }
 
-        // Verificar disponibilidad de las Vuelos
-        List<Vuelo> VuelosDisponibles = vueloRepository.findVuelosDisponiblesPorFecha(reserva.getFechaReserva());
-        List<Long> VuelosNoDisponibles = new ArrayList<>();
+        // Verificar disponibilidad de los Vuelos
+        List<Vuelo> vuelosDisponibles = vueloRepository.findVuelosDisponiblesPorFecha(reserva.getFecha());
+        List<Long> vuelosNoDisponibles = new ArrayList<>();
 
         for (Vuelo vuelo : reserva.getVuelos()) {
-            if (VuelosDisponibles.stream().noneMatch(h -> h.getIdVuelo() == vuelo.getIdVuelo())) {
-                VuelosNoDisponibles.add(vuelo.getIdVuelo());
+            if (vuelosDisponibles.stream().noneMatch(h -> h.getId() == vuelo.getId())) {
+                vuelosNoDisponibles.add(vuelo.getId());
             }
         }
 
-        if (!VuelosNoDisponibles.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no están disponibles en la fecha seleccionada: " + VuelosNoDisponibles);
+        if (!vuelosNoDisponibles.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no están disponibles en la fecha seleccionada: " + vuelosNoDisponibles);
         }
 
         return null; // La reserva es válida
     }
 
-    private long calcularPrecioTotal(Reserva reserva) {
-        long precioBaseTotal = 0;
+
+    private double calcularPrecioTotal(Reserva reserva) {
+        double precioBaseTotal = 0;
 
         for (Vuelo vuelo : reserva.getVuelos()) {
-            long idVuelo = vuelo.getIdVuelo();
+            long idVuelo = vuelo.getId();
 
             // Buscar el precioBase en la base de datos
             Vuelo vueloConPrecio = vueloRepository.findById(idVuelo).orElse(null);
 
             if (vueloConPrecio != null) {
-                long precioBaseVuelo = vueloConPrecio.getPrecioBase();
+                double precioBaseVuelo = vueloConPrecio.getPrecio();
 
                 // Aplicar descuento según la fecha de reserva
-                LocalDate fechaReserva = reserva.getFechaReserva();
+                LocalDate fechaReserva = reserva.getFecha();
                 LocalDate fechaActual = LocalDate.now();
                 long diasDeAnticipacion = ChronoUnit.DAYS.between(fechaActual, fechaReserva);
 
                 if (diasDeAnticipacion > 15) {
                     // Aplicar un descuento del 20%
-                    precioBaseVuelo -= (long) (precioBaseVuelo * 0.2);
+                    precioBaseVuelo -= (precioBaseVuelo * 0.2);
 
                     // Si la Vuelo es premium, aplicar un descuento adicional del 5%
-                    if ("p".equalsIgnoreCase(vueloConPrecio.getTipo())) {
-                        precioBaseVuelo -= (long) (precioBaseVuelo * 0.05);
+                    if ("p".equalsIgnoreCase(vueloConPrecio.getCiudadDestino())) {
+                        precioBaseVuelo -= (precioBaseVuelo * 0.05);
                     }
                 }
 
@@ -154,7 +175,7 @@ public class ReservaService {
 
     public ResponseEntity<?> obtenerReservaPorId(UUID id) {
         try {
-            Reserva reserva = reservaRepository.findByIdReserva(id).orElse(null);
+            Reserva reserva = reservaRepository.findById(id).orElse(null);
 
             if (reserva != null) {
                 return ResponseEntity.status(HttpStatus.OK).body(reserva);
@@ -182,14 +203,38 @@ public class ReservaService {
 
     public ResponseEntity<?> actualizarReserva(UUID id, Reserva reservaActualizada) {
         try {
-            Reserva reservaExistente = reservaRepository.findByIdReserva(id).orElse(null);
+            Reserva reservaExistente = reservaRepository.findById(id).orElse(null);
 
             if (reservaExistente != null) {
-                reservaActualizada.setIdReserva(id);
+                reservaActualizada.setId(id);
                 Reserva reservaActualizadaResult = reservaRepository.save(reservaActualizada);
                 return ResponseEntity.status(HttpStatus.OK).body(reservaActualizadaResult);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada para actualizar.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> pagarReserva(UUID id, ResponseEntity<Boolean> pagoRealizado) {
+        try {
+            if (pagoRealizado.getBody()==null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El cuerpo del pago es "+null);
+            }
+
+            if (!pagoRealizado.getBody()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pagoRealizado.getBody());
+            }
+
+            Reserva reservaExistente = reservaRepository.findById(id).orElse(null);
+
+            if (reservaExistente != null) {
+                reservaExistente.setPagada(pagoRealizado.getBody());
+                reservaRepository.save(reservaExistente);
+                return ResponseEntity.status(HttpStatus.OK).body(reservaExistente);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada para realizar pago.");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
