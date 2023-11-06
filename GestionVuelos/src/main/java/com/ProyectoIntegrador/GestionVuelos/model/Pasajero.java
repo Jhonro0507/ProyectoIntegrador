@@ -43,10 +43,6 @@ public class Pasajero {
 
 
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "pasajeros", fetch = FetchType.EAGER)
-    private List<Cliente> clientes  = new ArrayList<>();
-
     @JsonManagedReference
     @OneToMany(mappedBy = "pasajero", fetch = FetchType.EAGER)
     private List<Mascota> mascotas = new ArrayList<>();

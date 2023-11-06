@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -40,19 +41,9 @@ public class Cliente {
     @Column(nullable = false)
     private Boolean administrador;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+    private List<Reserva> reservas = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "cliente_pasajero",
-            joinColumns = @JoinColumn(name = "cliente_id"),
-            inverseJoinColumns = {
-                    @JoinColumn(name = "pasajero_tipo_documento"),
-                    @JoinColumn(name = "pasajero_numero_documento")
-            },
-            uniqueConstraints = {
-                    @UniqueConstraint(name = "unique_cliente_pasajero", columnNames = {"cliente_id","pasajero_tipo_documento", "pasajero_numero_documento"})
-            }
-    )
-    private List<Pasajero> pasajeros = new ArrayList<>();
 }

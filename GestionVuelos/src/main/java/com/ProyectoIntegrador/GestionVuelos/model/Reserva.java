@@ -34,7 +34,10 @@ public class Reserva {
     @Column(nullable = false)
     private boolean pagada;
 
-
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumns(@JoinColumn(name = "cliente_id"))
+    private Cliente cliente;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

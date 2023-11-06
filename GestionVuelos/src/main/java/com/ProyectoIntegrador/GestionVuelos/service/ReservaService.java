@@ -1,6 +1,7 @@
 package com.ProyectoIntegrador.GestionVuelos.service;
 
 import com.ProyectoIntegrador.GestionVuelos.DTO.ReservaDTO;
+import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Pasajero;
 import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
 import com.ProyectoIntegrador.GestionVuelos.model.Reserva;
@@ -14,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,21 +36,27 @@ public class ReservaService {
         try {
 
             List<Pasajero> pasajeros = reserva.getPasajeros();
-            List<Pasajero> pasajerosRegistrados = new ArrayList<>();
+            List<IdPasajero> pasajerosNoEncontrados = new ArrayList<>();
 
-            for (Pasajero pasajero : pasajeros) {
+            for (Pasajero pasajero : reserva.getPasajeros()) {
                 Pasajero pasajeroExistente = pasajeroRepository.findById(pasajero.getId()).orElse(null);
-
                 if (pasajeroExistente == null) {
-                    // Si el pasajero no existe en la base de datos, créalo
-                    pasajeroRepository.save(pasajero);
-                    pasajerosRegistrados.add(pasajero);
-                } else {
-                    pasajerosRegistrados.add(pasajeroExistente);
+                    pasajerosNoEncontrados.add(pasajero.getId());
                 }
             }
 
-            ResponseEntity<?> validationResult = validarReserva(reserva, pasajerosRegistrados);
+            if (!pasajerosNoEncontrados.isEmpty()) {
+                // Crear un objeto JSON para la respuesta
+                Map<String, Object> jsonResponse = new HashMap<>();
+                jsonResponse.put("error", "Estos pasajeros no existen");
+                jsonResponse.put("pasajerosNoEncontrados", pasajerosNoEncontrados);
+
+                // Devolver una respuesta JSON con un estado HTTP de BadRequest (400)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+            }
+
+
+            ResponseEntity<?> validationResult = validarReserva(reserva);
 
 
             if (validationResult != null) {
@@ -88,14 +93,7 @@ public class ReservaService {
     }
 
 
-    private ResponseEntity<?> validarReserva(Reserva reserva, List<Pasajero> pasajeros) {
-        // Validar existencia de pasajeros
-        for (Pasajero pasajero : pasajeros) {
-            if (pasajero == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno de los pasajeros no está registrado.");
-            }
-        }
-
+    private ResponseEntity<?> validarReserva(Reserva reserva) {
         // Validar la fecha (no nula y posterior a la fecha actual)
         LocalDate fechaActual = LocalDate.now();
         if (reserva.getFecha() == null || reserva.getFecha().isBefore(fechaActual)) {

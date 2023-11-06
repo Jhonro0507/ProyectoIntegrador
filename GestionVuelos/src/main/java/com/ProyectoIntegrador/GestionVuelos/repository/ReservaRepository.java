@@ -16,6 +16,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     Optional<Reserva> findById(UUID id);
     @Query("SELECT r FROM Reserva r JOIN r.pasajeros p WHERE p.id = :idPasajero")
     List<Reserva> obtenerReservasPorIdPasajero(@Param("idPasajero") IdPasajero idPasajero);
-    @Query("SELECT r FROM Reserva r JOIN r.pasajeros p JOIN p.clientes c WHERE c.id = :idCliente")
+    @Query("SELECT r FROM Reserva r JOIN r.cliente c WHERE c.id = :idCliente")
     List<Reserva> obtenerReservasPorIdCliente(@Param("idCliente") UUID idCliente);
 }
