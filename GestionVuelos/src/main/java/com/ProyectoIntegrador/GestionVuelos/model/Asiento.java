@@ -5,13 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-<<<<<<< HEAD
-import java.io.Serializable;
-
-=======
-import java.util.List;
->>>>>>> 6411165ac90dbd03deb7aca82084d7d1b8955b22
-
 @Setter
 @Getter
 @AllArgsConstructor

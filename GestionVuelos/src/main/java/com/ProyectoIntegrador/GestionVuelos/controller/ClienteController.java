@@ -1,44 +1,52 @@
 package com.ProyectoIntegrador.GestionVuelos.controller;
 import com.ProyectoIntegrador.GestionVuelos.model.Cliente;
+import com.ProyectoIntegrador.GestionVuelos.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
 
-    private final Cliente clienteService;
-
+    private final ClienteService clienteService;
+    
     @Autowired
-    public ClienteController(Cliente clienteService) {
-        this.clienteService = clienteService;
+    public ClienteController (ClienteService clienteService){
+        this.clienteService= clienteService;
     }
 
-    @GetMapping("/")
-    public List<Cliente> getAllClientes() {
-        return clienteService.getAllClientes();
+
+    @PostMapping
+    public ResponseEntity<?> registrarCliente(@RequestBody @Valid Cliente cliente) {
+        return clienteService.registrarCliente(cliente);
     }
 
-    @GetMapping("/{id}")
-    public Cliente getClienteById(@PathVariable Long id) {
-        return clienteService.getClienteById(id);
+    @GetMapping("/{idCliente}")
+    public ResponseEntity<?> obtenerClientePorId(@PathVariable UUID idCliente) {
+        return clienteService.obtenerClientePorId(idCliente);
     }
 
-    @PostMapping("/")
-    public Cliente createCliente(@RequestBody Cliente cliente) {
-        return clienteService.createCliente(cliente);
+    @GetMapping
+    public ResponseEntity<?> obtenerTodosLosClientes() {
+        return clienteService.obtenerTodosLosClientes();
     }
 
     @PutMapping("/{id}")
-    public Cliente updateCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
-        return clienteService.updateCliente(id, cliente);
+    public ResponseEntity<?> actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteActualizado) {
+        return clienteService.actualizarCliente(id, clienteActualizado);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCliente(@PathVariable Long id) {
-        clienteService.deleteCliente(id);
+    public ResponseEntity<?> eliminarCliente(@PathVariable Long id) {
+        return clienteService.eliminarCliente(id);
+    }
+
+    @GetMapping("/{cedula}/reservas")
+    public ResponseEntity<?> obtenerReservasPorIdCliente(@PathVariable UUID idCliente) {
+        return clienteService.obtenerReservasPorIdCliente(idCliente);
     }
 }
 
