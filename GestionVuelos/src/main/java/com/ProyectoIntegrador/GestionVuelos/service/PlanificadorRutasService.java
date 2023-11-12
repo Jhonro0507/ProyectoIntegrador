@@ -19,7 +19,7 @@ public class PlanificadorRutasService {
     private final VueloRepository vueloRepository;
 
     @Autowired
-    public PlanificadorRutasService(VueloRepository vueloRepository, Set<Vuelo> vuelos) {
+    public PlanificadorRutasService(VueloRepository vueloRepository) {
         this.vueloRepository = vueloRepository;
     }
 
