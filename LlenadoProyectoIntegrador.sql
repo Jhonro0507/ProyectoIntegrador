@@ -10,7 +10,10 @@ VALUES
   ('V6', 'Aerolínea6', 'Ciudad3', 'Ciudad4', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200),
   ('v7', 'Aerolínea7', 'Ciudad2', 'Ciudad3', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200),
   ('V8', 'Aerolínea8', 'Ciudad4', 'Ciudad5', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200),
-  ('V9', 'Aerolínea8', 'Ciudad1', 'Ciudad3', '2023-11-01', '08:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200);
+  ('V9', 'Aerolínea8', 'Ciudad1', 'Ciudad3', '2023-11-01', '08:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200),
+  ('V1', 'Aerolínea1', 'Ciudad1', 'Ciudad2', '2023-12-01', '10:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200),
+  ('V2', 'Aerolínea2', 'Ciudad2', 'Ciudad3', '2023-12-01', '11:30:00', '2023-12-01', '12:30:00', 250.00, 150, 200),
+  ('V1', 'Aerolínea1', 'Ciudad1', 'Ciudad3', '2023-12-01', '10:00:00', '2023-12-01', '10:30:00', 250.00, 150, 200);
   
 SELECT * FROM GestionVuelos.vuelos v
 WHERE (v.ciudad_origen = 'Ciudad1' OR v.ciudad_destino = 'Ciudad3')
@@ -28,4 +31,9 @@ INSERT INTO GestionVuelos.pasajeros (nombre, apellido1, apellido2, direccion, em
 VALUES 
 ('Juan', 'Pérez', 'Gómez', 'Calle Principal 123', 'juan@example.com', 30, '123456789', 'CC'),
 ('Norma', 'Restrepo', 'Gómez', 'Calle 123', 'norma@example.com', 20, '223451', 'TI');
+
+SELECT * FROM GestionVuelos.clientes;
+INSERT INTO GestionVuelos.clientes (id, usuario, password, email, nombre, apellidos, direccion, telefono, imagen_perfil, administrador)
+VALUES ('1', 'usuario1', 'password1', 'usuario1@example.com', 'Nombre1', 'Apellidos1', 'Dirección1', '123456789', 'imagen1.jpg', true);
+
 
