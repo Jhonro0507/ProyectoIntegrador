@@ -19,30 +19,6 @@ public class ClienteController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<?> registrarCliente(@RequestBody @Valid Cliente cliente) {
-        return clienteService.registrarCliente(cliente);
-    }
-
-    @GetMapping("/{idCliente}")
-    public ResponseEntity<?> obtenerClientePorId(@PathVariable UUID idCliente) {
-        return clienteService.obtenerClientePorId(idCliente);
-    }
-
-    @GetMapping
-    public ResponseEntity<?> obtenerTodosLosClientes() {
-        return clienteService.obtenerTodosLosClientes();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteActualizado) {
-        return clienteService.actualizarCliente(id, clienteActualizado);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarCliente(@PathVariable Long id) {
-        return clienteService.eliminarCliente(id);
-    }
 
     @GetMapping("/{cedula}/reservas")
     public ResponseEntity<?> obtenerReservasPorIdCliente(@PathVariable UUID idCliente) {

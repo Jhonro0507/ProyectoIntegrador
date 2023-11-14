@@ -1,6 +1,8 @@
 package com.ProyectoIntegrador.GestionVuelos.service;
 
+import com.ProyectoIntegrador.GestionVuelos.DTO.PagoDTO;
 import com.ProyectoIntegrador.GestionVuelos.DTO.ReservaDTO;
+import com.ProyectoIntegrador.GestionVuelos.client.PagoClient;
 import com.ProyectoIntegrador.GestionVuelos.model.*;
 import com.ProyectoIntegrador.GestionVuelos.repository.*;
 import jakarta.persistence.Column;

@@ -36,6 +36,8 @@ VALUES
 
 
 select * from GestionVuelos.asientos;
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM GestionVuelos.asientos;
 -- Insertar algunos registros de asientos
 INSERT INTO GestionVuelos.asientos (asiento_fila, asiento_columna, clase, estado, adicional, vuelo_id)
 VALUES
@@ -64,4 +66,4 @@ VALUES
   ('Maleta de mano', 8.5, false, 'CC', '123456789'),
   ('Maleta grande', 15.2, true, 'TI', '223451');
 
-
+SELECT * FROM GestionVuelos.reservas;

@@ -68,5 +68,9 @@ public class Reserva {
             }
     )
     private List<Vuelo> vuelos = new ArrayList<>();
+
+    public boolean getPagada() {
+        return pagada;
+    }
 }
 
