@@ -70,9 +70,6 @@ public class VueloService {
             vueloExistente.setCiudadDestino(vuelo.getCiudadDestino());
             vueloExistente.setHoraSalida(vuelo.getHoraSalida());
             vueloExistente.setHoraLlegada(vuelo.getHoraLlegada());
-            vueloExistente.setPrecio(vuelo.getPrecio());
-            vueloExistente.setAsientosDisponibles(vuelo.getAsientosDisponibles());
-            vueloExistente.setAsientosTotales(vuelo.getAsientosTotales());
 
             Vuelo vueloActualizada = vueloRepository.save(vueloExistente);
             return ResponseEntity.status(HttpStatus.OK).body(vueloActualizada);
@@ -96,33 +93,7 @@ public class VueloService {
         }
     }
 
-    public ResponseEntity<?> obtenerVuelosDisponiblesPorFecha(LocalDate fecha) {
-        try {
-            List<Vuelo> VuelosDisponibles = vueloRepository.findVuelosDisponiblesPorFecha(fecha);
 
-            if (VuelosDisponibles.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay Vuelos disponibles para la fecha especificada.");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(VuelosDisponibles);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    public ResponseEntity<?> obtenerVuelosDisponiblesPorFechaYTipo(LocalDate fecha, String tipo) {
-        try {
-            List<Vuelo> VuelosDisponibles = vueloRepository.findVuelosDisponiblesPorFechaYTipo(fecha, tipo);
-
-            if (VuelosDisponibles.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay Vuelos disponibles para la fecha y tipo especificados.");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(VuelosDisponibles);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
 }
 
 

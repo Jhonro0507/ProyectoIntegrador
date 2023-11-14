@@ -1,6 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "equipajes")
 public class Equipaje {
@@ -23,13 +22,11 @@ public class Equipaje {
     @Column(nullable = false)
     private boolean bodega;
 
-
-
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
-            @JoinColumn(name = "pasajero_tipo_documento"),
-            @JoinColumn(name = "pasajero_numero_documento")
+            @JoinColumn(name = "pasajero_tipo_documento", referencedColumnName = "pasajero_tipo_documento"),
+            @JoinColumn(name = "pasajero_numero_documento", referencedColumnName = "pasajero_numero_documento")
     })
     private Pasajero pasajero;
 

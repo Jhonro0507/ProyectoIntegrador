@@ -12,22 +12,9 @@ import java.util.List;
 
 @Repository
 public interface VueloRepository extends JpaRepository<Vuelo, Long> {
-    @Query("SELECT v " +
-            "FROM Vuelo v " +
-            "WHERE v NOT IN (SELECT v2 FROM Vuelo v2 JOIN v2.reservas r " +
-            "WHERE r.fecha = :fecha) " +
-            "AND v.precio = :precio")
-    List<Vuelo> findVuelosDisponiblesPorFechaYTipo(@Param("fecha") LocalDate fecha, @Param("precio") String tipo);
-
-    @Query("SELECT v " +
-            "FROM Vuelo v " +
-            "WHERE v NOT IN (SELECT v2 FROM Vuelo v2 JOIN v2.reservas r " +
-            "WHERE r.fecha = :fecha) ")
-    List<Vuelo> findVuelosDisponiblesPorFecha(@Param("fecha") LocalDate fecha);
-
     @Query("SELECT v FROM Vuelo v " +
             "WHERE (v.ciudadOrigen = :origen OR v.ciudadDestino = :destino) " +
-            "AND v.asientosDisponibles != 0 " +
+            "AND EXISTS (SELECT 1 FROM Asiento a WHERE a.estado = 'disponible' AND a.vuelo = v) " +
             "AND (v.fechaSalida > :fechaMinima OR (v.fechaSalida = :fechaMinima AND v.horaSalida > :horaMinima))")
     List<Vuelo> findVuelosDisponiblesPorOrigenYDestino(
             @Param("origen") String origen,
@@ -35,9 +22,5 @@ public interface VueloRepository extends JpaRepository<Vuelo, Long> {
             @Param("fechaMinima") LocalDate fechaMinima,
             @Param("horaMinima") LocalTime horaMinima
     );
-
-
-
-
 
 }

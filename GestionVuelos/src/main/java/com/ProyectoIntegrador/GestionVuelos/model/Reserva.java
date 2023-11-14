@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,11 +17,13 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "reservas")
 public class Reserva {
     @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
     @Column(columnDefinition = "DATE", nullable = false)
     private LocalDate fecha;
@@ -29,7 +32,7 @@ public class Reserva {
     @Column(nullable = false)
     private double totalPagar;
     @Column(nullable = false)
-    @Pattern(regexp = "^(pendiente|confirmada|cancelada|modificada)$")
+    @Pattern(regexp = "^(pendiente|confirmada)$")
     private String estado;
     @Column(nullable = false)
     private boolean pagada;
@@ -39,12 +42,11 @@ public class Reserva {
     @JoinColumns(@JoinColumn(name = "cliente_id"))
     private Cliente cliente;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "reserva_pasajero",
-            joinColumns = {
-                    @JoinColumn(name = "reserva_id")
-            },
+            joinColumns = @JoinColumn(name = "reserva_id"),
             inverseJoinColumns = {
                     @JoinColumn(name = "pasajero_tipo_documento"),
                     @JoinColumn(name = "pasajero_numero_documento")
@@ -56,7 +58,7 @@ public class Reserva {
     private List<Pasajero> pasajeros = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "reserva_vuelo",
             joinColumns = @JoinColumn(name = "reserva_id"),
@@ -66,5 +68,5 @@ public class Reserva {
             }
     )
     private List<Vuelo> vuelos = new ArrayList<>();
-
 }
+

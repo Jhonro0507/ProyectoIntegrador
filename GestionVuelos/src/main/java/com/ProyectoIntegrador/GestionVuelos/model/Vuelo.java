@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "vuelos")
 public class Vuelo {
@@ -39,13 +38,6 @@ public class Vuelo {
     private LocalDate fechaLlegada;
     @Column(columnDefinition = "TIME", nullable = false)
     private LocalTime horaLlegada;
-    @Column(nullable = false)
-    private double precio;
-    @Column(nullable = false)
-    private int asientosDisponibles;
-    @Column(nullable = false)
-    private int asientosTotales;
-
 
 
     @JsonIgnore

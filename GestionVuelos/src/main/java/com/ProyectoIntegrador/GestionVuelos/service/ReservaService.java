@@ -1,19 +1,17 @@
 package com.ProyectoIntegrador.GestionVuelos.service;
 
 import com.ProyectoIntegrador.GestionVuelos.DTO.ReservaDTO;
-import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
-import com.ProyectoIntegrador.GestionVuelos.model.Pasajero;
-import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
-import com.ProyectoIntegrador.GestionVuelos.model.Reserva;
-import com.ProyectoIntegrador.GestionVuelos.repository.PasajeroRepository;
-import com.ProyectoIntegrador.GestionVuelos.repository.VueloRepository;
-import com.ProyectoIntegrador.GestionVuelos.repository.ReservaRepository;
+import com.ProyectoIntegrador.GestionVuelos.model.*;
+import com.ProyectoIntegrador.GestionVuelos.repository.*;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,24 +22,117 @@ public class ReservaService {
     private final ReservaRepository reservaRepository;
     private final PasajeroRepository pasajeroRepository;
     private final VueloRepository vueloRepository;
+    private final EquipajeRepository equipajeRepository;
+    private final MascotaRepository mascotaRepository;
+    private final ClienteRepository clienteRepository;
+    private final AsientoRepository asientoRepository;
 
     @Autowired
-    public ReservaService(ReservaRepository reservaRepository, PasajeroRepository pasajeroRepository, VueloRepository vueloRepository) {
+    public ReservaService(ReservaRepository reservaRepository, PasajeroRepository pasajeroRepository, VueloRepository vueloRepository,
+                          EquipajeRepository equipajeRepository, MascotaRepository mascotaRepository, ClienteRepository clienteRepository,
+                          AsientoRepository asientoRepository) {
         this.reservaRepository = reservaRepository;
         this.pasajeroRepository = pasajeroRepository;
         this.vueloRepository = vueloRepository;
+        this.equipajeRepository = equipajeRepository;
+        this.mascotaRepository = mascotaRepository;
+        this.clienteRepository = clienteRepository;
+        this.asientoRepository = asientoRepository;
     }
 
     public ResponseEntity<?> registrarReserva(Reserva reserva) {
         try {
+            ResponseEntity<?> validationResult = validarReserva(reserva);
 
-            List<Pasajero> pasajeros = reserva.getPasajeros();
+            if (!(validationResult.getBody() instanceof Reserva)) {
+                return validationResult;
+            }
+            Reserva reservaValidada = (Reserva) validationResult.getBody();
+
+            reservaValidada.setFecha(LocalDate.now());
+            reservaValidada.setHora(LocalTime.now());
+            reservaValidada.setTotalPagar(calcularPrecioTotal(reservaValidada));
+            reservaValidada.setEstado("pendiente");
+            reservaValidada.setPagada(false);
+
+
+            Reserva reservaRegistrada = reservaRepository.save(reservaValidada);
+
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(reservaRegistrada);
+        } catch (Exception e) {
+            // Manejar la excepción aquí (puede imprimir el stack trace o realizar otras acciones)
+            e.printStackTrace(); // O manejar de otra manera según tus necesidades
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al registrar la reserva");
+        }
+    }
+
+
+
+    private ResponseEntity<?> validarReserva(Reserva reserva) {
+        try {
+            Reserva reservaValidada = new Reserva();
+            Cliente cliente = reserva.getCliente();
+            if (cliente == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La reserva no tiene un cliente");
+            }
+            Cliente clienteExistente = clienteRepository.findById(cliente.getId()).orElse(null);
+            if (clienteExistente == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El cliente con id " + cliente.getId() + " no existe");
+            }
+            reservaValidada.setCliente(clienteExistente);
+
             List<IdPasajero> pasajerosNoEncontrados = new ArrayList<>();
-
+            List<Pasajero> pasajerosValidados = new ArrayList<>();
+            int totalAsientos = 0;
+            if (reserva.getPasajeros() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La reserva no contiene pasajeros");
+            }
             for (Pasajero pasajero : reserva.getPasajeros()) {
-                Pasajero pasajeroExistente = pasajeroRepository.findById(pasajero.getId()).orElse(null);
+                IdPasajero idPasajero = pasajero.getId();
+                Pasajero pasajeroExistente = pasajeroRepository.findById(idPasajero).orElse(null);
                 if (pasajeroExistente == null) {
-                    pasajerosNoEncontrados.add(pasajero.getId());
+                    pasajerosNoEncontrados.add(idPasajero);
+                } else {
+                    totalAsientos += 1;
+
+                    List<Long> equipajesNoEncontrados = new ArrayList<>();
+                    List<Equipaje> equipajesValidados = new ArrayList<>();
+                    for (Equipaje equipaje : pasajero.getEquipajes()) {
+                        Equipaje equipajeExistente = equipajeRepository.findByIdYPasajeroId(equipaje.getId(), idPasajero).orElse(null);
+                        if (equipajeExistente == null) {
+                            equipajesNoEncontrados.add(equipaje.getId());
+                        } else {
+                            equipajesValidados.add(equipajeExistente);
+                        }
+                    }
+
+                    List<Long> mascotasNoEncontradas = new ArrayList<>();
+                    List<Mascota> mascotasValidadas = new ArrayList<>();
+                    for (Mascota mascota : pasajero.getMascotas()) {
+                        Mascota mascotaExistente = mascotaRepository.findByIdYPasajeroId(mascota.getId(), idPasajero).orElse(null);
+                        if (mascotaExistente == null) {
+                            mascotasNoEncontradas.add(mascota.getId());
+                        } else {
+                            totalAsientos += 1;
+                            mascotasValidadas.add(mascotaExistente);
+                        }
+                    }
+
+                    if (!equipajesNoEncontrados.isEmpty() || !mascotasNoEncontradas.isEmpty()) {
+                        // Crear un objeto JSON para la respuesta
+                        Map<String, Object> jsonResponse = new HashMap<>();
+                        jsonResponse.put("error", "Estos equipajes y/o mascotas del pasajero no existen");
+                        jsonResponse.put("pasajeroId", pasajero.getId());
+                        jsonResponse.put("ID equipajes no encontrados", equipajesNoEncontrados);
+                        jsonResponse.put("ID mascotas no encontradas", mascotasNoEncontradas);
+                        // Devolver una respuesta JSON con un estado HTTP de BadRequest (400)
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+                    }
+
+                    pasajeroExistente.setEquipajes(equipajesValidados);
+                    pasajeroExistente.setMascotas(mascotasValidadas);
+                    pasajerosValidados.add(pasajeroExistente);
                 }
             }
 
@@ -54,116 +145,78 @@ public class ReservaService {
                 // Devolver una respuesta JSON con un estado HTTP de BadRequest (400)
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
             }
+            reservaValidada.setPasajeros(pasajerosValidados);
 
-
-            ResponseEntity<?> validationResult = validarReserva(reserva);
-
-
-            if (validationResult != null) {
-                return validationResult;
+            // Validar existencia de Vuelos
+            if (reserva.getVuelos() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La reserva no tiene vuelo");
             }
+            List<Long> vuelosNoEncontrados = new ArrayList<>();
+            List<Vuelo> vuelosValidados = new ArrayList<>();
+            for (Vuelo vuelo : reserva.getVuelos()) {
+                Vuelo vueloExistente = vueloRepository.findById(vuelo.getId()).orElse(null);
+                if (vueloExistente == null) {
+                    vuelosNoEncontrados.add(vuelo.getId());
+                } else {
+                    if (totalAsientos != vuelo.getAsientos().size()) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La cantidad de asientos (" + vuelo.getAsientos().size() +
+                                ") y la cantidad de pasajeros y mascotas (" + totalAsientos + ") debe ser la misma en el vuelo con ID: " + vuelo.getId());
+                    }
+                    List<Asiento> asientosValidados = new ArrayList<>();
+                    // Validar disponibilidad de los asientos
+                    List<IdAsiento> asientosNoEncontrados = new ArrayList<>();
+                    for (Asiento asiento : vuelo.getAsientos()) {
+                        Asiento asientoExistente = asientoRepository.disponibilidadAsientoEnVuelo(vuelo.getId(), asiento.getId()).orElse(null);
+                        if (asientoExistente == null) {
+                            asientosNoEncontrados.add(asiento.getId());
+                        } else {
+                            asientoExistente.setEstado("reservado");
+                            asientosValidados.add(asientoExistente);
+                            asientoRepository.save(asientoExistente);
+                        }
+                    }
+                    if (!asientosNoEncontrados.isEmpty()) {
+                        Map<String, Object> jsonResponse = new HashMap<>();
+                        jsonResponse.put("error", "Estos asientos no existen o no están disponibles");
+                        jsonResponse.put("vueloID", vuelo.getId());
+                        jsonResponse.put("ID asientos", asientosNoEncontrados);
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+                    }
+                    vueloExistente.setAsientos(asientosValidados);
+                    vuelosValidados.add(vueloExistente);
+                }
+            }
+            if (!vuelosNoEncontrados.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no existen: " + vuelosNoEncontrados);
+            }
+            reservaValidada.setVuelos(vuelosValidados);
 
-            // Generar un número de reserva único (GUID)
-            UUID numeroReserva = UUID.randomUUID();
-            reserva.setId(numeroReserva);
-
-            // Continuar con el proceso de reserva si la validación es exitosa
-            double precioTotal = calcularPrecioTotal(reserva);
-            reserva.setTotalPagar(precioTotal);
-
-            Reserva reservaRegistrada = reservaRepository.save(reserva);
-
-            // Mapear la entidad Reserva a ReservaDTO
-            ReservaDTO reservaDTO = new ReservaDTO();
-            reservaDTO.setId(reservaRegistrada.getId());
-            reservaDTO.setFecha(reservaRegistrada.getFecha());
-            reservaDTO.setTotalPagar(reservaRegistrada.getTotalPagar());
-
-            // Obtener la lista de números de Vuelos
-            List<String> numerosVuelos = reservaRegistrada.getVuelos()
-                    .stream()
-                    .map(Vuelo::getNumeroVuelo)
-                    .collect(Collectors.toList());
-            reservaDTO.setNumerosVuelos(numerosVuelos);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservaDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(reservaValidada);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al validar la reserva");
         }
     }
 
 
-    private ResponseEntity<?> validarReserva(Reserva reserva) {
-        // Validar la fecha (no nula y posterior a la fecha actual)
-        LocalDate fechaActual = LocalDate.now();
-        if (reserva.getFecha() == null || reserva.getFecha().isBefore(fechaActual)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La fecha de reserva no es válida.");
-        }
-
-        // Validar existencia de Vuelos
-        List<Long> vuelosNoEncontrados = new ArrayList<>();
-
-        for (Vuelo vuelo : reserva.getVuelos()) {
-            Vuelo vueloExistente = vueloRepository.findById(vuelo.getId()).orElse(null);
-
-            if (vueloExistente == null) {
-                vuelosNoEncontrados.add(vuelo.getId());
-            }
-        }
-
-        if (!vuelosNoEncontrados.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no existen: " + vuelosNoEncontrados);
-        }
-
-        // Verificar disponibilidad de los Vuelos
-        List<Vuelo> vuelosDisponibles = vueloRepository.findVuelosDisponiblesPorFecha(reserva.getFecha());
-        List<Long> vuelosNoDisponibles = new ArrayList<>();
-
-        for (Vuelo vuelo : reserva.getVuelos()) {
-            if (vuelosDisponibles.stream().noneMatch(h -> h.getId() == vuelo.getId())) {
-                vuelosNoDisponibles.add(vuelo.getId());
-            }
-        }
-
-        if (!vuelosNoDisponibles.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Las siguientes Vuelos no están disponibles en la fecha seleccionada: " + vuelosNoDisponibles);
-        }
-
-        return null; // La reserva es válida
-    }
 
 
     private double calcularPrecioTotal(Reserva reserva) {
-        double precioBaseTotal = 0;
-
-        for (Vuelo vuelo : reserva.getVuelos()) {
-            long idVuelo = vuelo.getId();
-
-            // Buscar el precioBase en la base de datos
-            Vuelo vueloConPrecio = vueloRepository.findById(idVuelo).orElse(null);
-
-            if (vueloConPrecio != null) {
-                double precioBaseVuelo = vueloConPrecio.getPrecio();
-
-                // Aplicar descuento según la fecha de reserva
-                LocalDate fechaReserva = reserva.getFecha();
-                LocalDate fechaActual = LocalDate.now();
-                long diasDeAnticipacion = ChronoUnit.DAYS.between(fechaActual, fechaReserva);
-
-                if (diasDeAnticipacion > 15) {
-                    // Aplicar un descuento del 20%
-                    precioBaseVuelo -= (precioBaseVuelo * 0.2);
-
-                    // Si la Vuelo es premium, aplicar un descuento adicional del 5%
-                    if ("p".equalsIgnoreCase(vueloConPrecio.getCiudadDestino())) {
-                        precioBaseVuelo -= (precioBaseVuelo * 0.05);
-                    }
+        double precioAsientoBase = 100000;
+        double precioBaseTotal = 50000;
+        for (Vuelo vuelo : reserva.getVuelos()){
+            for (Asiento asiento : vuelo.getAsientos()){
+                if (Objects.equals(asiento.getClase(), "E")){
+                    precioBaseTotal += precioAsientoBase;
+                } else if (Objects.equals(asiento.getClase(), "EP")) {
+                    precioBaseTotal += precioAsientoBase*1.3;
+                } else if (Objects.equals(asiento.getClase(), "B")) {
+                    precioBaseTotal += precioAsientoBase*1.6;
+                } else if (Objects.equals(asiento.getClase(), "P")) {
+                    precioBaseTotal += precioAsientoBase*2;
                 }
-
-                precioBaseTotal += precioBaseVuelo;
             }
         }
-
         return precioBaseTotal;
     }
 

@@ -46,17 +46,6 @@ public class VueloController {
         return vueloService.eliminarVuelo(idVuelo);
     }
 
-    @GetMapping("/disponibles")
-    public ResponseEntity<?> obtenerVuelosDisponiblesPorFecha(
-            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        return vueloService.obtenerVuelosDisponiblesPorFecha(fecha);
-    }
 
-    @GetMapping("/disponibles/filtradas")
-    public ResponseEntity<?> obtenerVuelosDisponiblesPorFechaYTipo(
-            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
-            @RequestParam(value = "tipo", required = false) String tipo) {
-        return vueloService.obtenerVuelosDisponiblesPorFechaYTipo(fecha, tipo);
-    }
 }
 

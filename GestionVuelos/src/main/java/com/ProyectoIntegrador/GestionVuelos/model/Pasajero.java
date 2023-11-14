@@ -1,7 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +17,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "pasajeros")
 public class Pasajero {
@@ -40,8 +38,6 @@ public class Pasajero {
     @Email
     @Column(nullable = false)
     private String email;
-
-
 
     @JsonManagedReference
     @OneToMany(mappedBy = "pasajero", fetch = FetchType.EAGER)

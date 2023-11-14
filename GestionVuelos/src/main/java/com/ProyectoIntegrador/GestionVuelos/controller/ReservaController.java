@@ -22,7 +22,7 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registrarReserva(@RequestBody @Valid Reserva reserva) {
+    public ResponseEntity<?> registrarReserva(@RequestBody Reserva reserva) {
         return reservaService.registrarReserva(reserva);
     }
 
@@ -37,7 +37,7 @@ public class ReservaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarReserva(@PathVariable UUID id, @RequestBody @Valid Reserva reservaActualizada) {
+    public ResponseEntity<?> actualizarReserva(@PathVariable UUID id, @RequestBody Reserva reservaActualizada) {
         return reservaService.actualizarReserva(id, reservaActualizada);
     }
 

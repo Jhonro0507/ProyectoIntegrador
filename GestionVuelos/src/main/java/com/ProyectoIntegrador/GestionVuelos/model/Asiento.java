@@ -1,6 +1,9 @@
 package com.ProyectoIntegrador.GestionVuelos.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -9,7 +12,6 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
 @Table(name = "asientos")
 public class Asiento {
@@ -24,8 +26,6 @@ public class Asiento {
     private String estado;
     @Column
     private String adicional;
-
-
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)

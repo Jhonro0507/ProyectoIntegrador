@@ -1,8 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos.repository;
 
 import com.ProyectoIntegrador.GestionVuelos.model.Cliente;
-import com.ProyectoIntegrador.GestionVuelos.model.IdPasajero;
-import com.ProyectoIntegrador.GestionVuelos.model.Pasajero;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

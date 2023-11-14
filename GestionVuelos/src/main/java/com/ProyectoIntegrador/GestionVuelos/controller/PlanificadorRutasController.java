@@ -1,12 +1,9 @@
 package com.ProyectoIntegrador.GestionVuelos.controller;
 
 import com.ProyectoIntegrador.GestionVuelos.DTO.RutasDTO;
-import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
 import com.ProyectoIntegrador.GestionVuelos.service.PlanificadorRutasService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
