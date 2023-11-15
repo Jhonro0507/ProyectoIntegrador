@@ -72,7 +72,7 @@ public class ReservaService {
 
 
 
-    private ResponseEntity<?> validarReserva(Reserva reserva) {
+    public ResponseEntity<?> validarReserva(Reserva reserva) {
         try {
             Reserva reservaValidada = new Reserva();
             Cliente cliente = reserva.getCliente();
@@ -204,7 +204,7 @@ public class ReservaService {
 
 
 
-    private double calcularPrecioTotal(Reserva reserva) {
+    public double calcularPrecioTotal(Reserva reserva) {
         double precioAsientoBase = 100000;
         double precioBaseTotal = 50000;
         for (Vuelo vuelo : reserva.getVuelos()){
