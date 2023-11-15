@@ -24,7 +24,7 @@ public class AsientoService {
         try {
             List<Asiento> asientosDisponibles = asientoRepository.asientosDisponiblesEnVuelo(vueloId);
             if (asientosDisponibles.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay asientos disponibles en el vuelo especificad0.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay asientos disponibles en el vuelo especificado.");
             } else {
                 return ResponseEntity.status(HttpStatus.OK).body(asientosDisponibles);
             }
