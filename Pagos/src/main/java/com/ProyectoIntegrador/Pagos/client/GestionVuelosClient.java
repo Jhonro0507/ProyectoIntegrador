@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@FeignClient(name = "GestionVuelos", url = "http://localhost:8080")
+@FeignClient(name = "GestionVuelos", url = "http://localhost:9090")
 @Component
 public interface GestionVuelosClient {
 
