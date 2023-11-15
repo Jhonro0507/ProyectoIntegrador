@@ -1,5 +1,6 @@
 package com.ProyectoIntegrador.Pagos.service;
 
+import com.ProyectoIntegrador.Pagos.client.GestionVuelosClient;
 import com.ProyectoIntegrador.Pagos.model.Pago;
 import com.ProyectoIntegrador.Pagos.repository.PagoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
 public class PagoService {
     private final PagoRepository pagoRepository;
+    private final GestionVuelosClient gestionVuelosClient;
     @Autowired
-    public PagoService(PagoRepository pagoRepository) {
+    public PagoService(PagoRepository pagoRepository, GestionVuelosClient gestionVuelosClient) {
+        this.gestionVuelosClient = gestionVuelosClient;
         this.pagoRepository = pagoRepository;
     }
     public ResponseEntity<?> registrarPago(Pago pago) {
@@ -78,6 +83,37 @@ public class PagoService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+
+    public ResponseEntity<?> pagarReserva(Long id, String metodoPago) {
+        try {
+            Pago pagoExistente = pagoRepository.findById(id).orElse(null);
+
+            if (pagoExistente == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El Pago con id " + id + " no se encontró");
+            }
+            if (pagoExistente.getPagada()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El pago con id "+id+" ya ha sido realizado");
+            }
+            pagoExistente.setFechaPago(LocalDate.now());
+            pagoExistente.setHoraPago(LocalTime.now());
+            pagoExistente.setPagada(true);
+            pagoExistente.setMetodoPago(metodoPago);
+
+            pagoRepository.save(pagoExistente);
+
+            gestionVuelosClient.CrearPago(pagoExistente);
+
+            return ResponseEntity.status(HttpStatus.OK).body(pagoExistente);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
+
+
+
 
     public ResponseEntity<?> eliminarPago(Long id) {
         try {

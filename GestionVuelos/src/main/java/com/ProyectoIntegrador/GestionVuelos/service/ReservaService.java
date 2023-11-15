@@ -2,6 +2,7 @@ package com.ProyectoIntegrador.GestionVuelos.service;
 
 import com.ProyectoIntegrador.GestionVuelos.DTO.PagoDTO;
 import com.ProyectoIntegrador.GestionVuelos.DTO.ReservaDTO;
+import com.ProyectoIntegrador.GestionVuelos.DTO.RespuestaCreacionPagoDTO;
 import com.ProyectoIntegrador.GestionVuelos.client.PagoClient;
 import com.ProyectoIntegrador.GestionVuelos.model.*;
 import com.ProyectoIntegrador.GestionVuelos.repository.*;
@@ -219,7 +220,17 @@ public class ReservaService {
                 }
             }
         }
-        return precioBaseTotal;
+        double precioEquipajeBase = precioAsientoBase*0.5;
+        double precioEquipajeBaseTotal = precioAsientoBase*0.25;
+        for (Pasajero pasajero : reserva.getPasajeros()){
+            for (Equipaje equipaje : pasajero.getEquipajes()){
+                if (equipaje.isBodega()){
+                    precioEquipajeBaseTotal += precioEquipajeBase*2*equipaje.getPeso()/10;
+                }
+                precioEquipajeBaseTotal += precioEquipajeBase*equipaje.getPeso()/10;
+            }
+        }
+        return precioBaseTotal+precioEquipajeBaseTotal;
     }
 
 
@@ -270,25 +281,26 @@ public class ReservaService {
         }
     }
 
-    public ResponseEntity<?> pagarReserva(UUID id, ResponseEntity<Boolean> pagoRealizado) {
+    public ResponseEntity<?> pagarReserva(PagoDTO pagoDTO) {
         try {
-            if (pagoRealizado.getBody()==null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El cuerpo del pago es "+null);
+            Reserva reservaExistente = reservaRepository.findById(pagoDTO.getReservaId()).orElse(null);
+
+            if (reservaExistente == null) {
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva " + pagoDTO.getReservaId() + " no encontrada para realizar pago.");
             }
 
-            if (!pagoRealizado.getBody()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pagoRealizado.getBody());
-            }
+            reservaExistente.setEstado("confirmada");
+            reservaExistente.setPagada(true);
 
-            Reserva reservaExistente = reservaRepository.findById(id).orElse(null);
+            reservaExistente.getVuelos().stream()
+                    .flatMap(vuelo -> vuelo.getAsientos().stream())
+                    .forEach(asiento -> asiento.setEstado("ocupado"));
 
-            if (reservaExistente != null) {
-                reservaExistente.setPagada(pagoRealizado.getBody());
-                reservaRepository.save(reservaExistente);
-                return ResponseEntity.status(HttpStatus.OK).body(reservaExistente);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada para realizar pago.");
-            }
+            Reserva reservaActualizadaResult = reservaRepository.save(reservaExistente);
+
+
+            return ResponseEntity.status(HttpStatus.OK).body(pagoDTO);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

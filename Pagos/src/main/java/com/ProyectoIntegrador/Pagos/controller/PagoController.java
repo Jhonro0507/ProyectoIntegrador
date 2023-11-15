@@ -37,6 +37,11 @@ public class PagoController {
         return pagoService.actualizarPago(id, pagoActualizado);
     }
 
+    @PutMapping("/pagar/{id}")
+    public ResponseEntity<?> pagarReserva(@PathVariable Long id, @RequestBody String metodoPago) {
+        return pagoService.pagarReserva(id, metodoPago);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarPago(@PathVariable Long id) {
         return pagoService.eliminarPago(id);

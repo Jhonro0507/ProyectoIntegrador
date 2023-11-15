@@ -61,9 +61,9 @@ public class ReservaController {
         return reservaService.actualizarReserva(id, reservaActualizada);
     }
 
-    @PutMapping("/pago/{id}")
-    public ResponseEntity<?> pagarReserva(@PathVariable UUID id, @RequestBody ResponseEntity<Boolean> pagoRealizado) {
-        return reservaService.pagarReserva(id, pagoRealizado);
+    @PutMapping("/pago")
+    public ResponseEntity<?> pagarReserva(@RequestBody PagoDTO pagoDTO) {
+        return reservaService.pagarReserva(pagoDTO);
     }
 
     @DeleteMapping("/{id}")

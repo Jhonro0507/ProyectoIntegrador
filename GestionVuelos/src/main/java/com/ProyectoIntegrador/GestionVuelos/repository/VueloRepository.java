@@ -14,7 +14,6 @@ import java.util.List;
 public interface VueloRepository extends JpaRepository<Vuelo, Long> {
     @Query("SELECT v FROM Vuelo v " +
             "WHERE (v.ciudadOrigen = :origen OR v.ciudadDestino = :destino) " +
-            "AND EXISTS (SELECT 1 FROM Asiento a WHERE a.estado = 'disponible' AND a.vuelo = v) " +
             "AND (v.fechaSalida > :fechaMinima OR (v.fechaSalida = :fechaMinima AND v.horaSalida > :horaMinima))")
     List<Vuelo> findVuelosDisponiblesPorOrigenYDestino(
             @Param("origen") String origen,

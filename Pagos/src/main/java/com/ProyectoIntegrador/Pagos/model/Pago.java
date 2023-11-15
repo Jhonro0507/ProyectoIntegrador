@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Setter
@@ -27,6 +29,10 @@ public class Pago {
     private boolean pagada;
     @Column
     private String metodoPago;
+    @Column
+    private LocalDate fechaPago;
+    @Column
+    private LocalTime horaPago;
 
     public boolean getPagada (){
         return pagada;

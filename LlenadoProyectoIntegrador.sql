@@ -4,16 +4,15 @@ INSERT INTO GestionVuelos.vuelos (numero_vuelo, aerolinea, ciudad_origen, ciudad
 VALUES
   ('V1', 'Aerolínea1', 'Ciudad1', 'Ciudad2', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
   ('V2', 'Aerolínea2', 'Ciudad2', 'Ciudad3', '2023-12-01', '11:00:00', '2023-12-01', '12:30:00'),
-  ('V3', 'Aerolínea3', 'Ciudad3', 'Ciudad4', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('V4', 'Aerolínea4', 'Ciudad1', 'Ciudad4', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('V5', 'Aerolínea5', 'Ciudad1', 'Ciudad3', '2023-11-06', '03:00:00', '2023-12-01', '10:30:00'),
-  ('V6', 'Aerolínea6', 'Ciudad3', 'Ciudad4', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('v7', 'Aerolínea7', 'Ciudad2', 'Ciudad3', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('V8', 'Aerolínea8', 'Ciudad4', 'Ciudad5', '2023-12-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('V9', 'Aerolínea8', 'Ciudad1', 'Ciudad3', '2023-11-01', '08:00:00', '2023-12-01', '10:30:00'),
-  ('V1', 'Aerolínea1', 'Ciudad1', 'Ciudad2', '2023-12-01', '10:00:00', '2023-12-01', '10:30:00'),
-  ('V2', 'Aerolínea2', 'Ciudad2', 'Ciudad3', '2023-12-01', '11:30:00', '2023-12-01', '12:30:00'),
-  ('V1', 'Aerolínea1', 'Ciudad1', 'Ciudad3', '2023-12-01', '10:00:00', '2023-12-01', '10:30:00');
+  ('V3', 'Aerolínea2', 'Ciudad2', 'Ciudad3', '2023-12-03', '7:30:00', '2023-12-01', '12:30:00'),
+  ('V4', 'Aerolínea1', 'Ciudad1', 'Ciudad3', '2023-12-01', '10:00:00', '2023-11-25', '10:30:00'),
+  
+  ('V5', 'Aerolínea3', 'Ciudad3', 'Ciudad1', '2023-12-01', '08:00:00', '2023-12-05', '10:30:00'),
+  ('v6', 'Aerolínea7', 'Ciudad3', 'Ciudad1', '2023-12-01', '08:00:00', '2023-12-15', '8:00:00'),
+  ('V7', 'Aerolínea8', 'Ciudad3', 'Ciudad4', '2023-12-01', '08:00:00', '2023-12-15', '10:30:00'),
+  ('V8', 'Aerolínea8', 'Ciudad4', 'Ciudad1', '2023-11-01', '08:00:00', '2023-12-15', '10:30:00');
+  
+
   
 
 
@@ -41,14 +40,21 @@ DELETE FROM GestionVuelos.asientos;
 -- Insertar algunos registros de asientos
 INSERT INTO GestionVuelos.asientos (asiento_fila, asiento_columna, clase, estado, adicional, vuelo_id)
 VALUES
-    ('A', '1', 'E', 'disponible', NULL, 1),
-    ('A', '2', 'EP', 'disponible', 'Ventana', 1),
-    ('B', '1', 'B', 'reservado', 'Pasillo', 1),
-    ('B', '2', 'P', 'ocupado', NULL, 1),
-    ('C', '1', 'E', 'disponible', 'Ventana', 1),
-    ('C', '2', 'EP', 'disponible', 'Ventana', 1),
-    ('D', '1', 'B', 'disponible', 'Pasillo', 1),
-    ('D', '2', 'P', 'ocupado', NULL, 1);
+    ('A', '1', 'E', 'disponible', 'Ventana', 1),
+    ('A', '2', 'E', 'disponible', NULL, 1),
+    ('A', '3', 'E', 'disponible', 'Pasillo', 1),
+    
+    ('K', '4', 'EP', 'disponible', NULL, 2),
+    ('K', '5', 'EP', 'disponible', 'Ventana', 2),
+    ('K', '6', 'EP', 'disponible', 'Ventana', 2),
+    
+    ('D', '1', 'B', 'disponible', 'Pasillo', 3),
+    
+	('F', '3', 'B', 'disponible', 'Pasillo', 4),
+    
+	('B', '1', 'E', 'disponible', 'Ventana', 6),
+    ('B', '2', 'E', 'disponible', NULL, 6),
+    ('B', '3', 'E', 'disponible', 'Pasillo', 6);
 
 
 select * from GestionVuelos.mascotas;

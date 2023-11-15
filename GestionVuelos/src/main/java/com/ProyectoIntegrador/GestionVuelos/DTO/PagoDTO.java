@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 @Setter
@@ -18,4 +20,7 @@ public class PagoDTO {
     private Double totalPagar;
     private boolean pagada;
     private String metodoPago;
+    private LocalDate fechaPago;
+    private LocalTime horaPago;
+
 }
