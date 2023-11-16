@@ -1,6 +1,6 @@
 package com.ProyectoIntegrador.GestionVuelos;
 
-import com.ProyectoIntegrador.GestionVuelos.DTO.RutasDTO;
+import com.ProyectoIntegrador.GestionVuelos.dto.RutasDTO;
 import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
 import com.ProyectoIntegrador.GestionVuelos.repository.VueloRepository;
 import com.ProyectoIntegrador.GestionVuelos.service.PlanificadorRutasService;

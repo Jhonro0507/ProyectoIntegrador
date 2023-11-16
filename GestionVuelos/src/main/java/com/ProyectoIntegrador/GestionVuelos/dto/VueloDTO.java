@@ -1,4 +1,4 @@
-package com.ProyectoIntegrador.GestionVuelos.DTO;
+package com.ProyectoIntegrador.GestionVuelos.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

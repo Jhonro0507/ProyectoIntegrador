@@ -1,10 +1,9 @@
 package com.ProyectoIntegrador.GestionVuelos.service;
 
-import com.ProyectoIntegrador.GestionVuelos.DTO.RutasDTO;
+import com.ProyectoIntegrador.GestionVuelos.dto.RutasDTO;
 import com.ProyectoIntegrador.GestionVuelos.model.Vuelo;
 
 import com.ProyectoIntegrador.GestionVuelos.repository.VueloRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PlanificadorRutasService {

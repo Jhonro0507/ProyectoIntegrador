@@ -1,4 +1,4 @@
-package com.ProyectoIntegrador.GestionVuelos.DTO;
+package com.ProyectoIntegrador.GestionVuelos.dto;
 public class AsientoDTO {
     private String clase;
     private String fila;

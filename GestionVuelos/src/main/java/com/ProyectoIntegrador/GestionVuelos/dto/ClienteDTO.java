@@ -1,4 +1,4 @@
-package com.ProyectoIntegrador.GestionVuelos.DTO;
+package com.ProyectoIntegrador.GestionVuelos.dto;
 public class ClienteDTO {
     private String tipoIdentificacion;
     private String numIdentificacion;

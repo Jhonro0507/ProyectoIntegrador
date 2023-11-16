@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -67,8 +68,8 @@ public class ClienteService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El Cliente con id " + id + " no se encontró");
             }
 
-            if (clienteActualizado.getUsuario() != null) {
-                clienteExistente.setUsuario(clienteActualizado.getUsuario());
+            if (clienteActualizado.getUsername() != null) {
+                clienteExistente.setUsername(clienteActualizado.getUsername());
             }
             if (clienteActualizado.getPassword() != null) {
                 clienteExistente.setPassword(clienteActualizado.getPassword());
@@ -88,8 +89,8 @@ public class ClienteService {
             if (clienteActualizado.getImagenPerfil() != null) {
                 clienteExistente.setImagenPerfil(clienteActualizado.getImagenPerfil());
             }
-            if (clienteActualizado.getAdministrador() != null) {
-                clienteExistente.setAdministrador(clienteActualizado.getAdministrador());
+            if (clienteActualizado.getRole() != null) {
+                clienteExistente.setRole(clienteActualizado.getRole());
             }
             clienteRepository.save(clienteExistente);
 
@@ -122,5 +123,10 @@ public class ClienteService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    public Optional<Cliente> findByUsername(String username) {
+        Optional<Cliente> cliente = clienteRepository.findByUsername(username);
+        return cliente;
     }
 }

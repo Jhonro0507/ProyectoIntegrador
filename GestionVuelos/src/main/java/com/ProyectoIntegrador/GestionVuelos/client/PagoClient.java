@@ -1,7 +1,7 @@
 package com.ProyectoIntegrador.GestionVuelos.client;
 
 
-import com.ProyectoIntegrador.GestionVuelos.DTO.PagoDTO;
+import com.ProyectoIntegrador.GestionVuelos.dto.PagoDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -154,14 +154,14 @@ public class ClienteServiceTest {
         Long id = 1L;
         Cliente clienteExistente = new Cliente();
         Cliente clienteActualizado = new Cliente();
-        clienteActualizado.setUsuario("Pepito perez");
+        clienteActualizado.setUsername("Pepito perez");
         clienteActualizado.setPassword("password");
         clienteActualizado.setEmail("lucho@gmail.com");
         clienteActualizado.setNombre("Pepito");
         clienteActualizado.setDireccion("Calle falsa 123");
         clienteActualizado.setTelefono("1234567");
         clienteActualizado.setImagenPerfil("tttpa");
-        clienteActualizado.setAdministrador(true);
+        clienteActualizado.setRole(true);
 
 
         when(clienteRepository.findById(id)).thenReturn(Optional.of(clienteExistente));

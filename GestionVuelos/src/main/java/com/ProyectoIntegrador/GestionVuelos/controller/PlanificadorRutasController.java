@@ -1,10 +1,11 @@
 package com.ProyectoIntegrador.GestionVuelos.controller;
 
-import com.ProyectoIntegrador.GestionVuelos.DTO.RutasDTO;
+import com.ProyectoIntegrador.GestionVuelos.dto.RutasDTO;
 import com.ProyectoIntegrador.GestionVuelos.service.PlanificadorRutasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ public class PlanificadorRutasController {
     public PlanificadorRutasController(PlanificadorRutasService planificadorRutasService){
         this.planificadorRutasService = planificadorRutasService;
     }
+
+    @PreAuthorize("permitAll")
     @GetMapping()
     public ResponseEntity<?> encontrarRutas(
             @RequestParam String origen,
