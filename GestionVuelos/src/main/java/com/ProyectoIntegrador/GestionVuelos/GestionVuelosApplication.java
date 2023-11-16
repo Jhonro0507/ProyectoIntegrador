@@ -20,12 +20,12 @@ public class GestionVuelosApplication {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Bean
+/*	@Bean
 	public CommandLineRunner createPasswordCommand(){
 		return args -> {
 			System.out.println(passwordEncoder.encode("clave123"));
 			System.out.println(passwordEncoder.encode("clave456"));
 		};
-	}
+	}*/
 
 }
